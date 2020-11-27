@@ -14,7 +14,7 @@ sudo wget -P /tmp/ https://raw.githubusercontent.com/on-air/shell/master/bin/she
 sudo chmod +x /tmp/shell.sh
 sudo cp /tmp/shell.sh /usr/bin/shell
 sudo shell install virtual password $PUBLIC_IPV4
-echo Droplet: $HOSTNAME, IP Address: $PUBLIC_IPV4 > /root/index.html
+echo "{\"host\": {\"name\": \"$HOSTNAME\", \"ip\": \"$PUBLIC_IPV4\"}}" > /root/snap.json
 ```
 
 ```sh
