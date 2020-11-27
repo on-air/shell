@@ -142,7 +142,7 @@ apt-app () {
 	postgre-sql configure
 	ng configure
 	ng plugin start --all
-	ng site install 000-default
+	ng site install 000-default $3
 	if [ "$1" != "$SHELL_VAR_VIRTUAL" ]
 		then
 		systemctl disable nginx
@@ -166,13 +166,13 @@ install () {
 	apt-get $1
 	apt-dependencies $1
 	apt-shell $1
-	apt-app $1 $2
+	apt-app $1 $2 $3
 	apt-security $1
 	}
 
 if [ "$1" == "install" ]
 	then
-		install $2 $3
+		install $2 $3 $4
 elif [ "$1" == "update" ]
 	then
 		apt-shell

@@ -117,7 +117,7 @@ nginx_generate_file_index () {
 	root /var/www/$1/public;
 	server_name $s_name;
 	location / {
-		proxy_pass http://$s_name:3000/;
+		proxy_pass http://localhost:3000/;
 		proxy_http_version 1.1;
 		proxy_set_header Upgrade \$http_upgrade;
 		proxy_set_header Connection 'upgrade';

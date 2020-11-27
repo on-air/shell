@@ -8,12 +8,12 @@ curl -sL https://raw.githubusercontent.com/on-air/shell/master/install/virtual.s
 #!/bin/bash
 
 umask 022
+export HOSTNAME=$(curl -s http://169.254.169.254/metadata/v1/hostname)
+export PUBLIC_IPV4=$(curl -s http://169.254.169.254/metadata/v1/interfaces/public/0/ipv4/address)
 sudo wget -P /tmp/ https://raw.githubusercontent.com/on-air/shell/master/bin/shell.sh
 sudo chmod +x /tmp/shell.sh
 sudo cp /tmp/shell.sh /usr/bin/shell
-sudo shell install virtual
-export HOSTNAME=$(curl -s http://169.254.169.254/metadata/v1/hostname)
-export PUBLIC_IPV4=$(curl -s http://169.254.169.254/metadata/v1/interfaces/public/0/ipv4/address)
+sudo shell install virtual password $PUBLIC_IPV4
 echo Droplet: $HOSTNAME, IP Address: $PUBLIC_IPV4 > /root/index.html
 ```
 
