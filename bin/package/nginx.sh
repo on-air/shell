@@ -145,7 +145,7 @@ server {
 	root /var/www/$1/public;
 	server_name $1 www.$1 *.$1;
 	location / {
-		proxy_pass http://\$host:3000/;
+		proxy_pass http://localhost:3000/;
 		proxy_http_version 1.1;
 		proxy_set_header Upgrade \$http_upgrade;
 		proxy_set_header Connection 'upgrade';
@@ -167,7 +167,7 @@ server {
 	root /var/www/$1/public;
 	server_name $1 www.$1 *.$1;
 	location / {
-		proxy_pass http://\$host:3000/;
+		proxy_pass http://localhost:3000/;
 		proxy_http_version 1.1;
 		proxy_set_header Upgrade \$http_upgrade;
 		proxy_set_header Connection 'upgrade';
