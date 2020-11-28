@@ -15,6 +15,9 @@ sudo chmod +x /tmp/shell.sh
 sudo cp /tmp/shell.sh /usr/bin/shell
 sudo shell install virtual password $PUBLIC_IPV4
 echo "{\"host\": {\"name\": \"$HOSTNAME\", \"ip\": \"$PUBLIC_IPV4\"}}" > /root/snap.json
+
+# export HOSTNAME=$(curl -s http://169.254.169.254/v1/hostname)
+# export PUBLIC_IPV4=$(curl -s http://169.254.169.254/v1/interfaces/public/0/ipv4/address)
 ```
 
 ```sh
