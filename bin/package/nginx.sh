@@ -134,7 +134,7 @@ nginx_generate_file_config () {
 	echo -en "# server {
 	# listen 80;
 	# server_name $1 www.$1 *.$1;
-	# return 301 https://$host$request_uri;
+	# return 301 https://\$host\$request_uri;
 	# }
 
 server {
@@ -158,9 +158,9 @@ server {
 	}
 
 server {
-	listen 443;
-	ssl_certificate /etc/letsencrypt/live/\$host/fullchain.pem;
-	ssl_certificate_key /etc/letsencrypt/live/\$host/privkey.pem;
+	listen 443 ssl;
+	ssl_certificate /etc/letsencrypt/live/$1/fullchain.pem;
+	ssl_certificate_key /etc/letsencrypt/live/$1/privkey.pem;
 	access_log /var/log/www/$1/access.log;
 	error_log /var/log/www/$1/error.log;
 	index index.html;
@@ -252,6 +252,10 @@ nginx_ssl_well_known () {
 		fi
 	}
 
+nginx_ssl_wc () {
+	# certbot certonly --agree-tos --manual --preferred-challenges=dns --email certbot@netizen.ninja --server https://acme-v02.api.letsencrypt.org/directory -d *.$1
+	}
+
 if [ "$1" == "--help" ]
 	then
 		nginx_help
@@ -308,6 +312,10 @@ elif [ "$1" == "site" ] && [ "$2" == "install" ]
 elif [ "$1" == "ssl" ] && [ "$2" == "well-known" ]
 	then
 		nginx_ssl_well_known $3 $4
+		nginx_reload
+elif [ "$1" == "ssl" ] && [ "$2" == "wc" ]
+	then
+		nginx_ssl_wc $3
 		nginx_reload
 else
 	nginx_help
