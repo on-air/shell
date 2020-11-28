@@ -193,6 +193,7 @@ events {
 
 http {
 	sendfile on;
+	client_max_body_size 100M;
 	tcp_nopush on;
 	tcp_nodelay on;
 	keepalive_timeout 65;
