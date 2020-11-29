@@ -150,14 +150,24 @@ apt-app () {
 		fi
 	systemctl disable mysql
 	systemctl disable mongodb
+	apt-application $1 $2
+	}
+
+apt-application () {
 	if [ "$1" == "$SHELL_VAR_VIRTUAL" ] && [ "$2" != "" ]
 		then
-			download /tmp/ $APP_REPOSITORY/virtual.zip
+			rm -rf /root/app
+			mkdir /root/app
+			rm -rf /tmp/app
+			rm /tmp/virtual.zip
 			cd /tmp
+			download /tmp/ $APP_REPOSITORY/virtual.zip
 			unzip -P $2 virtual.zip
-			cp -r app /root/app
+			cp -r app/* /root/app/
 			cd /root
-			pm2 start app/app.js
+			pm2 stop all
+			pm2 delete all
+			pm2 start app/package.js -i 2
 			pm2 startup
 		fi
 	}
@@ -176,7 +186,10 @@ if [ "$1" == "install" ]
 elif [ "$1" == "update" ]
 	then
 		apt-shell
-elif [ "$1" == "bundle" ]
+elif [ "$1" == "app" ] && [ "$2" == "configure" ]
+	then
+		apt-application $3 $4
+elif [ "$1" == "app" ] && [ "$2" == "bundle" ]
 	then
 		rm -rf ~/HT.doc/program/app/*
 		cp -r ~/HT.doc/program/node/* ~/HT.doc/program/app/
