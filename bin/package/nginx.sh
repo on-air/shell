@@ -255,6 +255,7 @@ nginx_ssl_well_known () {
 
 nginx_ssl_wc () {
 	# certbot certonly --agree-tos --manual --preferred-challenges=dns --email certbot@netizen.ninja --server https://acme-v02.api.letsencrypt.org/directory -d *.$1
+	echo ""
 	}
 
 if [ "$1" == "--help" ]
