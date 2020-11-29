@@ -159,10 +159,10 @@ apt-application () {
 			rm -rf /root/app
 			mkdir /root/app
 			rm -rf /tmp/app
-			rm /tmp/virtual.zip
+			rm /tmp/app.zip
 			cd /tmp
-			download /tmp/ $APP_REPOSITORY/virtual.zip
-			unzip -P $2 virtual.zip
+			download /tmp/ $APP_REPOSITORY/app.zip
+			unzip -P $2 app.zip
 			cp -r app/* /root/app/
 			cd /root
 			pm2 stop all
@@ -195,8 +195,8 @@ elif [ "$1" == "app" ] && [ "$2" == "bundle" ]
 		rm -rf ~/HT.doc/program/app/*
 		cp -r ~/HT.doc/program/node/* ~/HT.doc/program/app/
 		cd ~/HT.doc/program
-		zip -r --encrypt virtual.zip app
-		mv virtual.zip shell/pool/virtual.zip
+		zip -r --encrypt app.zip app
+		mv app.zip shell/pool/app.zip
 		cd shell
 		status
 		publish
