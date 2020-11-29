@@ -23,4 +23,5 @@ echo "{\"host\": {\"name\": \"$HOSTNAME\", \"ip\": \"$PUBLIC_IPV4\"}}" > /root/s
 ```sh
 zip -r --encrypt file.zip path
 unzip -P password file.zip
+unrar x -e file1.rar
 ```
