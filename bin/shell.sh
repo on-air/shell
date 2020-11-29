@@ -164,10 +164,10 @@ apt-application () {
 			download /tmp/ $APP_REPOSITORY/app.zip
 			unzip -P $2 app.zip
 			cp -r app/* /root/app/
-			cd /root
+			cd /root/app
 			pm2 stop all
 			pm2 delete all
-			pm2 start app/package.js -i 2
+			pm2 start package.js -i 2
 			pm2 startup
 		fi
 	}
