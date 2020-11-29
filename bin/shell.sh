@@ -191,6 +191,7 @@ elif [ "$1" == "app" ] && [ "$2" == "configure" ]
 		apt-application $3 $4
 elif [ "$1" == "app" ] && [ "$2" == "bundle" ]
 	then
+		rm -rf ~/HT.doc/program/node/node_temporaries/*
 		rm -rf ~/HT.doc/program/app/*
 		cp -r ~/HT.doc/program/node/* ~/HT.doc/program/app/
 		cd ~/HT.doc/program
