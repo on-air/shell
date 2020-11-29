@@ -76,21 +76,21 @@ nginx_site_stop () {
 nginx_generate_commit () {
 	if [ "$1" == "--configuration" ]
 		then
-		cp /tmp/nginx.conf $nginx_dir/nginx.conf
-		rm -rf $nginx_dir_site_availanle/*
-		rm -rf $nginx_dir_site_enabled/*
-		if [ -d /var/www ]
-			then
-				rm -rf /var/www/*
-		else
-			mkdir /var/www
-			fi
-		if [ -d /var/log/www ]
-			then
-				rm -rf /var/log/www/*
-		else
-			mkdir /var/log/www
-			fi
+			cp /tmp/nginx.conf $nginx_dir/nginx.conf
+			rm -rf $nginx_dir_site_availanle/*
+			rm -rf $nginx_dir_site_enabled/*
+			if [ -d /var/www ]
+				then
+					rm -rf /var/www/*
+			else
+				mkdir /var/www
+				fi
+			if [ -d /var/log/www ]
+				then
+					rm -rf /var/log/www/*
+			else
+				mkdir /var/log/www
+				fi
 	else
 		cp /tmp/v-host-\($1\).conf $nginx_dir_site_availanle/$1
 		rm -rf /var/log/www/$1
@@ -98,6 +98,7 @@ nginx_generate_commit () {
 		rm -rf /var/www/$1
 		mkdir /var/www/$1
 		mkdir /var/www/$1/public
+		mkdir /var/www/$1/public/static
 		mkdir /var/www/$1/ssl
 		mkdir /var/www/$1/ssl/.well-known
 		mkdir /var/www/$1/ssl/.well-known/acme-chalenge
@@ -165,7 +166,29 @@ server {
 	error_log /var/log/www/$1/error.log;
 	index index.html;
 	root /var/www/$1/public;
-	server_name $1 www.$1 *.$1;
+	server_name $1;
+	location / {
+		proxy_pass http://localhost:3000/;
+		proxy_http_version 1.1;
+		proxy_set_header Upgrade \$http_upgrade;
+		proxy_set_header Connection 'upgrade';
+		proxy_set_header Host \$host;
+		proxy_cache_bypass \$http_upgrade;
+		}
+	location /static/ {
+		try_files \$uri \$uri/ =404;
+		}
+	}
+
+server {
+	listen 443 ssl;
+	ssl_certificate /etc/letsencrypt/live/$1-0001/fullchain.pem;
+	ssl_certificate_key /etc/letsencrypt/live/$1-0001/privkey.pem;
+	access_log /var/log/www/$1/access.log;
+	error_log /var/log/www/$1/error.log;
+	index index.html;
+	root /var/www/$1/public;
+	server_name *.$1;
 	location / {
 		proxy_pass http://localhost:3000/;
 		proxy_http_version 1.1;
@@ -235,19 +258,19 @@ nginx_ssl_well_known () {
 		then
 			if [ -d /var/www/$1/ssl/certificate/$sub_domain ]
 				then
-					echo 2 | sudo -S certbot certonly --agree-tos --email certbot@netizen.ninja --webroot -w /var/www/$1/ssl -d $sub_domain
+					echo 2 | sudo -S certbot certonly --agree-tos --non-interactive --force-interactive --email certbot@netizen.ninja --webroot -w /var/www/$1/ssl -d $sub_domain
 					cp /etc/letsencrypt/live/$sub_domain/fullchain.pem /var/www/$1/ssl/certificate/$sub_domain/chain.pem
 					cp /etc/letsencrypt/live/$sub_domain/privkey.pem /var/www/$1/ssl/certificate/$sub_domain/key.pem
 			else
 				mkdir /var/www/$1/ssl/certificate/$sub_domain
-				certbot certonly --agree-tos --email certbot@netizen.ninja --webroot -w /var/www/$1/ssl -d $sub_domain
+				certbot certonly --agree-tos --non-interactive --force-interactive --email certbot@netizen.ninja --webroot -w /var/www/$1/ssl -d $sub_domain
 				cp /etc/letsencrypt/live/$sub_domain/fullchain.pem /var/www/$1/ssl/certificate/$sub_domain/chain.pem
 				cp /etc/letsencrypt/live/$sub_domain/privkey.pem /var/www/$1/ssl/certificate/$sub_domain/key.pem
 				fi
 	else
 		touch $nginx_bot_certificate
 		mkdir /var/www/$1/ssl/certificate/$sub_domain
-		echo N | sudo -S certbot certonly --agree-tos --email certbot@netizen.ninja --webroot -w /var/www/$1/ssl -d $sub_domain
+		echo N | sudo -S certbot certonly --agree-tos --non-interactive --force-interactive --email certbot@netizen.ninja --webroot -w /var/www/$1/ssl -d $sub_domain
 		cp /etc/letsencrypt/live/$sub_domain/fullchain.pem /var/www/$1/ssl/certificate/$sub_domain/chain.pem
 		cp /etc/letsencrypt/live/$sub_domain/privkey.pem /var/www/$1/ssl/certificate/$sub_domain/key.pem
 		fi
