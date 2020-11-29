@@ -102,6 +102,7 @@ nginx_generate_commit () {
 		mkdir /var/www/$1/ssl
 		mkdir /var/www/$1/ssl/.well-known
 		mkdir /var/www/$1/ssl/.well-known/acme-chalenge
+		mkdir /var/www/$1/ssl/cert
 		mkdir /var/www/$1/ssl/certificate
 		fi
 	}
@@ -277,8 +278,9 @@ nginx_ssl_well_known () {
 	}
 
 nginx_ssl_wc () {
-	# certbot certonly --agree-tos --manual --preferred-challenges=dns --email certbot@netizen.ninja --server https://acme-v02.api.letsencrypt.org/directory -d *.$1
-	echo ""
+	certbot certonly --agree-tos --manual --preferred-challenges=dns --email certbot@netizen.ninja --server https://acme-v02.api.letsencrypt.org/directory -d *.$1
+	cp /etc/letsencrypt/live/$1-0001/fullchain.pem /var/www/$1/ssl/cert/chain.pem
+	cp /etc/letsencrypt/live/$1-0001/privkey.pem /var/www/$1/ssl/cert/key.pem
 	}
 
 if [ "$1" == "--help" ]
