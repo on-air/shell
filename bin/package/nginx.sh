@@ -129,6 +129,9 @@ nginx_generate_file_index () {
 	location /static/ {
 		try_files \$uri \$uri/ =404;
 		}
+	location /favicon.ico {
+		try_files \$uri \$uri/ =404;
+		}
 	}" > /tmp/v-host-\($1\).conf
 	}
 
@@ -157,6 +160,9 @@ server {
 	location /static/ {
 		try_files \$uri \$uri/ =404;
 		}
+	location /favicon.ico {
+		try_files \$uri \$uri/ =404;
+		}
 	}
 
 server {
@@ -179,6 +185,9 @@ server {
 	location /static/ {
 		try_files \$uri \$uri/ =404;
 		}
+	location /favicon.ico {
+		try_files \$uri \$uri/ =404;
+		}
 	}
 
 server {
@@ -199,6 +208,9 @@ server {
 		proxy_cache_bypass \$http_upgrade;
 		}
 	location /static/ {
+		try_files \$uri \$uri/ =404;
+		}
+	location /favicon.ico {
 		try_files \$uri \$uri/ =404;
 		}
 	}" > /tmp/v-host-\($1\).conf
