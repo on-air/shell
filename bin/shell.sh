@@ -42,8 +42,8 @@ apt-dependencies () {
 		then
 			apt install -y gnome-tweak-tool dconf-editor font-manager
 		fi
-	apt install -y git curl zip unzip rar unrar gnupg nginx nginx-extras mysql-server postgresql postgresql-contrib mongodb net-tools fail2ban
-	# apt install -y apache2 libapache2-mod-security2
+	apt install -y git curl zip unzip rar unrar gnupg nginx nginx-extras postgresql postgresql-contrib net-tools fail2ban
+	# apt install -y apache2 libapache2-mod-security2 mysql-server mongodb
 	curl -sL https://deb.nodesource.com/setup_15.x | sudo -E bash -
 	apt install -y nodejs
 	npm install -g n
