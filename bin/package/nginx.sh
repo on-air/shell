@@ -234,7 +234,8 @@ http {
 	tcp_nodelay on;
 	keepalive_timeout 65;
 	types_hash_max_size 2048;
-	# server_tokens off;
+	more_set_headers \"Server: Netizen\";
+	server_tokens off;
 	server_names_hash_bucket_size 64;
 	# server_name_in_redirect off;
 	include /etc/nginx/mime.types;
@@ -303,6 +304,12 @@ elif [ "$1" == "configure" ]
 		nginx_generate_file_configuration
 		nginx_generate_commit --configuration
 		nginx_restart
+elif [ "$1" == "enable" ]
+	then
+		systemctl enable nginx
+elif [ "$1" == "disable" ]
+	then
+		systemctl disable nginx
 elif [ "$1" == "start" ] && [ "$2" == "" ]
 	then
 		nginx_start
