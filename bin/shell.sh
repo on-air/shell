@@ -200,6 +200,10 @@ elif [ "$1" == "app" ] && [ "$2" == "bundle" ]
 		cd shell
 		status
 		publish
+elif [ "$1" == "start" ]
+	then
+		systemctl start nginx
+		systemctl start postgresql
 else
 	echo ""
 	fi
