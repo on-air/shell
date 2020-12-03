@@ -101,7 +101,6 @@ nginx_generate_commit () {
 				fi
 	elif [ "$1" == "--ssl" ]
 		cp /tmp/v-host-ssl-\($2\).conf $nginx_dir_site_availanle/ssl.$2
-		fi
 	else
 		cp /tmp/v-host-\($1\).conf $nginx_dir_site_availanle/$1
 		rm -rf /var/log/www/$1
