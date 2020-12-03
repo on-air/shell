@@ -101,7 +101,7 @@ nginx_generate_commit () {
 				fi
 	elif [ "$1" == "--ssl" ]
 		then
-			cp /tmp/v-host-ssl-\($2\).conf $nginx_dir_site_availanle/ssl.$2
+			cp /tmp/v-host-\($2\).conf $nginx_dir_site_availanle/$2
 	else
 		cp /tmp/v-host-\($1\).conf $nginx_dir_site_availanle/$1
 		rm -rf /var/log/www/$1
@@ -229,7 +229,7 @@ server {
 	location /favicon.ico {
 		try_files \$uri \$uri/ =404;
 		}
-	}" > /tmp/v-host-ssl-\($1\).conf
+	}" > /tmp/v-host-\($1\).conf
 	}
 
 nginx_generate_configuration () {
