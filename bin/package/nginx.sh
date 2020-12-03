@@ -367,8 +367,8 @@ elif [ "$1" == "site" ] && [ "$2" == "install" ]
 elif [ "$1" == "site" ] && [ "$2" == "ssl" ]
 	then
 		nginx_site_stop $3
-		nginx_generate_site_ssl --ssl $3
-		nginx_generate_commit $3
+		nginx_generate_site_ssl $3
+		nginx_generate_commit --ssl $3
 		nginx_site_start $3
 		nginx_reload
 elif [ "$1" == "ssl" ] && [ "$2" == "well-known" ]
