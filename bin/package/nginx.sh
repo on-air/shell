@@ -166,9 +166,11 @@ server {
 	}
 
 server {
-	listen 443 ssl;
-	ssl_certificate /etc/letsencrypt/live/$1/fullchain.pem;
-	ssl_certificate_key /etc/letsencrypt/live/$1/privkey.pem;
+	listen 80;
+	# ssl_certificate /var/www/$1/ssl/certificate/$1/chain.pem;
+	# ssl_certificate_key /var/www/$1/ssl/certificate/$1/key.pem;
+	# ssl_certificate /etc/letsencrypt/live/$1/fullchain.pem;
+	# ssl_certificate_key /etc/letsencrypt/live/$1/privkey.pem;
 	access_log /var/log/www/$1/access.log;
 	error_log /var/log/www/$1/error.log;
 	index index.html;
@@ -191,9 +193,11 @@ server {
 	}
 
 server {
-	listen 443 ssl;
-	ssl_certificate /etc/letsencrypt/live/$1-0001/fullchain.pem;
-	ssl_certificate_key /etc/letsencrypt/live/$1-0001/privkey.pem;
+	listen 80;
+	# ssl_certificate /var/www/$1/ssl/certificate/chain.pem;
+	# ssl_certificate_key /var/www/$1/ssl/certificate/key.pem;
+	# ssl_certificate /etc/letsencrypt/live/$1-0001/fullchain.pem;
+	# ssl_certificate_key /etc/letsencrypt/live/$1-0001/privkey.pem;
 	access_log /var/log/www/$1/access.log;
 	error_log /var/log/www/$1/error.log;
 	index index.html;
