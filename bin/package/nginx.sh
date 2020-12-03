@@ -55,6 +55,10 @@ nginx_site_start () {
 			ln -s $nginx_dir_site_availanle/* $nginx_dir_site_enabled/
 	else
 		ln -s $nginx_dir_site_availanle/$1 $nginx_dir_site_enabled/
+		if [ -f $nginx_dir_site_availanle/ssl.$1 ]
+			then
+				ln -s $nginx_dir_site_availanle/ssl.$1 $nginx_dir_site_enabled/
+				fi
 		fi
 	}
 
@@ -69,6 +73,10 @@ nginx_site_stop () {
 		if [ -f $nginx_dir_site_enabled/$1 ]
 			then
 				rm $nginx_dir_site_enabled/$1
+				fi
+		if [ -f $nginx_dir_site_enabled/ssl.$1 ]
+			then
+				rm $nginx_dir_site_enabled/ssl.$1
 				fi
 		fi
 	}
@@ -91,6 +99,9 @@ nginx_generate_commit () {
 			else
 				mkdir /var/log/www
 				fi
+	elif [ "$1" == "--ssl" ]
+		cp /tmp/v-host-ssl-\($2\).conf $nginx_dir_site_availanle/ssl.$2
+		fi
 	else
 		cp /tmp/v-host-\($1\).conf $nginx_dir_site_availanle/$1
 		rm -rf /var/log/www/$1
@@ -102,12 +113,11 @@ nginx_generate_commit () {
 		mkdir /var/www/$1/ssl
 		mkdir /var/www/$1/ssl/.well-known
 		mkdir /var/www/$1/ssl/.well-known/acme-chalenge
-		mkdir /var/www/$1/ssl/cert
 		mkdir /var/www/$1/ssl/certificate
 		fi
 	}
 
-nginx_generate_file_index () {
+nginx_generate_site_default () {
 	s_name=$2
 	if [ "$2" == "" ]
 		then
@@ -135,14 +145,8 @@ nginx_generate_file_index () {
 	}" > /tmp/v-host-\($1\).conf
 	}
 
-nginx_generate_file_config () {
-	echo -en "# server {
-	# listen 80;
-	# server_name $1 www.$1 *.$1;
-	# return 301 https://\$host\$request_uri;
-	# }
-
-server {
+nginx_generate_site () {
+	echo -en "server {
 	listen 80;
 	access_log /var/log/www/$1/access.log;
 	error_log /var/log/www/$1/error.log;
@@ -163,12 +167,20 @@ server {
 	location /favicon.ico {
 		try_files \$uri \$uri/ =404;
 		}
+	}" > /tmp/v-host-\($1\).conf
+	}
+
+nginx_generate_site_ssl () {
+	echo -en "server {
+	listen 80;
+	server_name $1 www.$1 *.$1;
+	return 301 https://\$host\$request_uri;
 	}
 
 server {
-	listen 80;
-	# ssl_certificate /var/www/$1/ssl/certificate/$1/chain.pem;
-	# ssl_certificate_key /var/www/$1/ssl/certificate/$1/key.pem;
+	listen 443 ssl;
+	ssl_certificate /var/www/$1/ssl/certificate/$1/chain.pem;
+	ssl_certificate_key /var/www/$1/ssl/certificate/$1/key.pem;
 	# ssl_certificate /etc/letsencrypt/live/$1/fullchain.pem;
 	# ssl_certificate_key /etc/letsencrypt/live/$1/privkey.pem;
 	access_log /var/log/www/$1/access.log;
@@ -193,9 +205,9 @@ server {
 	}
 
 server {
-	listen 80;
-	# ssl_certificate /var/www/$1/ssl/certificate/chain.pem;
-	# ssl_certificate_key /var/www/$1/ssl/certificate/key.pem;
+	listen 443 ssl;
+	ssl_certificate /var/www/$1/ssl/certificate/chain.pem;
+	ssl_certificate_key /var/www/$1/ssl/certificate/key.pem;
 	# ssl_certificate /etc/letsencrypt/live/$1-0001/fullchain.pem;
 	# ssl_certificate_key /etc/letsencrypt/live/$1-0001/privkey.pem;
 	access_log /var/log/www/$1/access.log;
@@ -217,10 +229,10 @@ server {
 	location /favicon.ico {
 		try_files \$uri \$uri/ =404;
 		}
-	}" > /tmp/v-host-\($1\).conf
+	}" > /tmp/v-host-ssl-\($1\).conf
 	}
 
-nginx_generate_file_configuration () {
+nginx_generate_configuration () {
 	echo -en "user www-data;
 worker_processes auto;
 pid /run/nginx.pid;
@@ -241,20 +253,13 @@ http {
 	more_set_headers \"Server: Netizen\";
 	server_tokens off;
 	server_names_hash_bucket_size 64;
-	# server_name_in_redirect off;
 	include /etc/nginx/mime.types;
 	default_type application/octet-stream;
 	ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3;
 	ssl_prefer_server_ciphers on;
+	gzip on;
 	# access_log /var/log/nginx/access.log;
 	# error_log /var/log/nginx/error.log;
-	gzip on;
-	# gzip_vary ;
-	# gzip_proxied ;
-	# gzip_comp_level ;
-	# gzip_buffers ;
-	# gzip_http_version ;
-	# gzip_types ;
 	server {
 		listen 80;
 		listen [::]:80;
@@ -296,8 +301,8 @@ nginx_ssl_well_known () {
 
 nginx_ssl_wc () {
 	certbot certonly --agree-tos --manual --preferred-challenges=dns --email certbot@netizen.ninja --server https://acme-v02.api.letsencrypt.org/directory -d *.$1
-	cp /etc/letsencrypt/live/$1-0001/fullchain.pem /var/www/$1/ssl/cert/chain.pem
-	cp /etc/letsencrypt/live/$1-0001/privkey.pem /var/www/$1/ssl/cert/key.pem
+	cp /etc/letsencrypt/live/$1-0001/fullchain.pem /var/www/$1/ssl/certificate/chain.pem
+	cp /etc/letsencrypt/live/$1-0001/privkey.pem /var/www/$1/ssl/certificate/key.pem
 	}
 
 if [ "$1" == "--help" ]
@@ -305,7 +310,7 @@ if [ "$1" == "--help" ]
 		nginx_help
 elif [ "$1" == "configure" ]
 	then
-		nginx_generate_file_configuration
+		nginx_generate_configuration
 		nginx_generate_commit --configuration
 		nginx_restart
 elif [ "$1" == "enable" ]
@@ -348,14 +353,21 @@ elif [ "$1" == "site" ] && [ "$2" == "stop" ]
 elif [ "$1" == "site" ] && [ "$2" == "install" ] && [ "$3" == "000-default" ]
 	then
 		nginx_site_stop $3
-		nginx_generate_file_index $3 $4
+		nginx_generate_site_default $3 $4
 		nginx_generate_commit $3
 		nginx_site_start $3
 		nginx_reload
 elif [ "$1" == "site" ] && [ "$2" == "install" ]
 	then
 		nginx_site_stop $3
-		nginx_generate_file_config $3
+		nginx_generate_site $3
+		nginx_generate_commit $3
+		nginx_site_start $3
+		nginx_reload
+elif [ "$1" == "site" ] && [ "$2" == "ssl" ]
+	then
+		nginx_site_stop $3
+		nginx_generate_site_ssl --ssl $3
 		nginx_generate_commit $3
 		nginx_site_start $3
 		nginx_reload
