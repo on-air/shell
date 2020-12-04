@@ -301,8 +301,14 @@ nginx_ssl_well_known () {
 
 nginx_ssl_wc () {
 	certbot certonly --agree-tos --manual --preferred-challenges=dns --email certbot@netizen.ninja --server https://acme-v02.api.letsencrypt.org/directory -d *.$1
-	cp /etc/letsencrypt/live/$1-0001/fullchain.pem /var/www/$1/ssl/certificate/chain.pem
-	cp /etc/letsencrypt/live/$1-0001/privkey.pem /var/www/$1/ssl/certificate/key.pem
+	if [ -f /etc/letsencrypt/live/$1-0001/fullchain.pem ]
+		then
+			cp /etc/letsencrypt/live/$1-0001/fullchain.pem /var/www/$1/ssl/certificate/chain.pem
+			cp /etc/letsencrypt/live/$1-0001/privkey.pem /var/www/$1/ssl/certificate/key.pem
+	else
+		cp /etc/letsencrypt/live/$1/fullchain.pem /var/www/$1/ssl/certificate/chain.pem
+		cp /etc/letsencrypt/live/$1/privkey.pem /var/www/$1/ssl/certificate/key.pem
+		fi
 	}
 
 if [ "$1" == "--help" ]
