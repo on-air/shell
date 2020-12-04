@@ -165,8 +165,6 @@ apt-application () {
 			unzip -P $2 app.zip
 			cp -r app/* /root/app/
 			cd /root/app
-			pm2 stop all
-			pm2 delete all
 			pm2 start package.js -i 2
 			pm2 startup
 			systemctl stop nginx

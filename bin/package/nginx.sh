@@ -232,6 +232,41 @@ server {
 	}" > /tmp/v-host-\($1\).conf
 	}
 
+nginx_generate_site_ssl_on_wc () {
+	echo -en "server {
+	listen 80;
+	server_name $1 www.$1 *.$1;
+	return 301 https://\$host\$request_uri;
+	}
+
+server {
+	listen 443 ssl;
+	ssl_certificate /var/www/$1/ssl/certificate/chain.pem;
+	ssl_certificate_key /var/www/$1/ssl/certificate/key.pem;
+	# ssl_certificate /etc/letsencrypt/live/$1-0001/fullchain.pem;
+	# ssl_certificate_key /etc/letsencrypt/live/$1-0001/privkey.pem;
+	access_log /var/log/www/$1/access.log;
+	error_log /var/log/www/$1/error.log;
+	index index.html;
+	root /var/www/$1/public;
+	server_name *.$1;
+	location / {
+		proxy_pass http://localhost:3000/;
+		proxy_http_version 1.1;
+		proxy_set_header Upgrade \$http_upgrade;
+		proxy_set_header Connection 'upgrade';
+		proxy_set_header Host \$host;
+		proxy_cache_bypass \$http_upgrade;
+		}
+	location /static/ {
+		try_files \$uri \$uri/ =404;
+		}
+	location /favicon.ico {
+		try_files \$uri \$uri/ =404;
+		}
+	}" > /tmp/v-host-\($1\).conf
+	}
+
 nginx_generate_configuration () {
 	echo -en "user www-data;
 worker_processes auto;
@@ -368,6 +403,13 @@ elif [ "$1" == "site" ] && [ "$2" == "install" ]
 		nginx_site_stop $3
 		nginx_generate_site $3
 		nginx_generate_commit $3
+		nginx_site_start $3
+		nginx_reload
+elif [ "$1" == "site" ] && [ "$2" == "ssl" ] && [ "$4" == "--wc" ]
+	then
+		nginx_site_stop $3
+		nginx_generate_site_ssl $3
+		nginx_generate_commit --ssl $3
 		nginx_site_start $3
 		nginx_reload
 elif [ "$1" == "site" ] && [ "$2" == "ssl" ]
