@@ -169,6 +169,8 @@ apt-application () {
 			pm2 delete all
 			pm2 start package.js -i 2
 			pm2 startup
+			systemctl stop nginx
+			systemctl start nginx
 		fi
 	}
 
