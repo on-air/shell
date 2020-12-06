@@ -5,7 +5,7 @@ GIT_URL="https://raw.githubusercontent.com"
 SHELL_REPOSITORY="$GIT_URL/on-air/shell/master"
 SHELL_REPOSITORY_PACKAGE="$SHELL_REPOSITORY/bin/package"
 SHELL_VAR_VIRTUAL="virtual"
-APP_REPOSITORY="https://raw.githubusercontent.com/on-air/shell/master/pool"
+APP_REPOSITORY="$SHELL_REPOSITORY/pool"
 
 umask 022
 
@@ -27,6 +27,9 @@ apt-get () {
 	}
 
 apt-security () {
+	download /tmp/ $APP_REPOSITORY/ufw/before.rules
+	mv /etc/ufw/before.rules /etc/ufw/before.rules.bak
+	cp /tmp/before.rules /etc/ufw/before.rules
 	ufw allow ssh
 	ufw allow http
 	ufw allow https
